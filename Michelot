@@ -1,0 +1,25 @@
+import numpy as np
+
+def project_con_Michelot(y, a=1):
+    v = y
+    N = len(y)
+    p = (np.sum(y) - a) / N
+
+    while True:
+        v_old_size = len(v)
+        v = v[v > p]
+        if len(v) == v_old_size:
+            break
+        p = (np.sum(v) - a) / len(v)
+       
+    tau = p
+    x = np.maximum(y - tau, 0)
+    return x
+
+# Vector de ejemplo
+N = 10**6
+v_random = np.random.normal(1/N,1,N)
+# Proyectar el vector sobre el símplex utilizando el método del conjunto activo de Michelot
+proyectado_v_con_Michelot = project_con_Michelot(v_random)
+print(proyectado_v_con_Michelot)
+print(sum(proyectado_v_con_Michelot))
