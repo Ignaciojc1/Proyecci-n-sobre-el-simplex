@@ -1,0 +1,53 @@
+import numpy as np
+
+def Algoritmo_propuesto(y, a=1):
+    N = len(y)
+    v = [y[0]]  # Inicializar v con y1
+    v_hat = []  # Inicializar v_hat como una lista vacía
+    rho = y[0] - a
+
+    # Paso 2
+    for n in range(1, N):
+        if y[n] > rho:
+            rho = ((rho * len(v)) + y[n] - a) / (len(v) + 1)
+            if rho > y[n] - a:
+                v.append(y[n])
+            else:
+                v_hat.append(y[n])
+                v = [y[n]]
+                rho = y[n] - a
+        else:
+            v_hat.append(y[n])
+
+    # Paso 3
+    if v_hat:
+        for y_hat in v_hat:
+            if y_hat > rho:
+                v.append(y_hat)
+                rho = ((rho * (len(v) - 1)) + y_hat) / len(v)
+
+    # Paso 4
+    while True:
+        longitud_v_anterior = len(v)
+        for y_i in v[:]:  # Hacer una copia de v porque vamos a modificarla
+            if y_i <= rho:
+                v.remove(y_i)
+                rho = rho + (rho - y_i) / len(v) if len(v) > 0 else 0
+        if len(v) == longitud_v_anterior:  # Si la longitud de v no cambió, salir del bucle
+            break
+
+    # Paso 5
+    tau = rho
+    K = len(v)
+
+    # Paso 6
+    x = np.maximum(y - tau, 0)
+
+    return x
+
+# Ejemplo de uso
+N = 20
+y = np.ones(N)
+resultado = Algoritmo_propuesto(y)
+print(resultado)
+print(sum(resultado))
