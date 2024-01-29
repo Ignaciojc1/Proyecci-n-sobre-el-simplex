@@ -1,0 +1,35 @@
+import numpy as np
+import heapq
+
+def projection_with_heap(y, a=1):
+    # Construir un montón (heap) a partir de y
+    v = [-y_i for y_i in y]  # Usamos el negativo para simular un max-heap
+    heapq.heapify(v)
+
+    u_sum = 0
+    K = 0
+
+    for k in range(1, len(y) + 1):
+        uk = -v[0]  # El elemento más grande del montón
+        u_sum += uk
+
+        if (u_sum - a) / k >= uk:
+            K = k
+            break
+
+        heapq.heappop(v)  # Eliminar el elemento más grande y rehacer el heap
+
+    # Calcular τ
+    tau = (u_sum - a) / K
+
+    # Proyectar y sobre el símplex
+    x = np.maximum(y - tau, 0)
+
+    print("El valor de K es:", K)
+    return x
+
+# Ejemplo de uso
+y = np.random.normal(1/20,1,20)
+result = projection_with_heap(y)
+print(result)
+print(sum(result))
