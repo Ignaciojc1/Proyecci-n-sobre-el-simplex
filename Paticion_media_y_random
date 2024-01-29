@@ -1,0 +1,31 @@
+import numpy as np
+
+N = 10**6
+v_random = np.random.normal(1/N, 1, N)
+def proyec_con_Particion(y, a=1):
+
+    v = y
+    K = 0
+    S = -a
+    while len(v) > 0:
+        p = np.median(v)  # Un pivote podría ser la mediana de v para tomar uno random es usar np.random.choise(v)
+        y_high = v[v > p]
+        y_low = v[v < p]
+        M = np.sum(v == p)
+        
+        if (S + M*p + np.sum(y_high)) / (K + M + len(y_high)) < p:
+            S += M*p + np.sum(y_high)
+            K += M + len(y_high)
+            v = y_low
+        else:
+            v = y_high
+        
+    tau = S / K
+    print(K)
+    x = np.maximum(y - tau, 0)
+    return x
+
+# Proyectar el vector sobre el símplex utilizando el algoritmo de partición
+proyectado_v_particion =proyec_con_Particion(v_random)
+print(proyectado_v_particion)
+print(sum(proyectado_v_particion))
