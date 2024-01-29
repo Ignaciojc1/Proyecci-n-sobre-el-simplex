@@ -3,7 +3,7 @@ import heapq
 
 def projection_with_heap(y, a=1):
     # Construir un montón (heap) a partir de y
-    v = [-y_i for y_i in y]  # Usamos el negativo para simular un max-heap
+    v = [-y_i for y_i in y]  
     heapq.heapify(v)
 
     u_sum = 0
