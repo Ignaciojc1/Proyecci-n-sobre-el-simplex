@@ -1,0 +1,61 @@
+import numpy as np
+import timeit
+from multiprocessing import Pool
+
+def condat_s(x, b):
+    # Implementación serial de Condat
+    n = len(x)
+    v = np.zeros(n)
+    rho = x[0] - b
+
+    for y in x[1:]:
+        if y > rho:
+            rho = rho + (y - rho) / (np.sum(v) + 1)
+            if rho > y - b:
+                v[np.argmax(x)] = y
+            else:
+                v = np.zeros(n)
+                v[np.argmax(x)] = y
+                rho = y - b
+
+    return v
+
+def condat_p(x, b, k, threshold):
+    # Implementación paralela de Condat
+    n = len(x)
+    partitions = np.array_split(x, k)
+
+    with Pool(processes=k) as pool:
+        results = pool.starmap(condat_s, [(part, b) for part in partitions])
+
+    p_values = [np.sum(part) - b / len(part) if len(part) > 0 else 0 for part in partitions]
+
+    for i in range(k):
+        for j in range(len(partitions[i])):
+            if partitions[i][j] <= p_values[i]:
+                p_values[i] += (p_values[i] - partitions[i][j]) / (len(partitions[i]) - 1)
+                partitions[i][j] = 0
+
+    return np.concatenate(partitions)
+
+def run_benchmark(func, *args):
+    # Función para ejecutar un benchmark
+    res = timeit.timeit(lambda: func(*args), number=1)
+    return res
+
+def standard_normal_test_condat(n):
+    print("Results for Condat:")
+    res_serial = run_benchmark(condat_s, np.random.normal(0, 0.001, n), 1)
+    print(f"Serial: {res_serial}")
+    
+    res_list = [res_serial]
+    for i in range(1, 7):
+        res_parallel = run_benchmark(condat_p, np.random.normal(0, 0.001, n), 1, i*8, 0.01)
+        print(f"{i*8}: {res_parallel}")
+        res_list.append(res_parallel)
+    
+    return res_list
+
+if __name__ == "__main__":
+    n = 10**8
+    standard_normal_test_condat(n)
