@@ -1,0 +1,22 @@
+import matplotlib.pyplot as plt
+cores = [1, 8, 16, 24, 32, 40, 48]
+condat_res_norm = [323.218, 58.585, 31.504, 25.403, 21.841, 18.944, 15.955] # Con Normal (0,1)
+condat_res_uniform = [342.492, 62.615, 43.089, 31.773, 27.794, 25.375, 23.983]# Con Uniforme (0,1)
+condat_res_small_norm = [346.161, 62.782, 40.870, 36.984, 31.876, 29.163, 26.564]#Con Normal(0,0.001)
+condat_norm_rate = [0]*7
+condat_unif_rate = [0]*7
+condat_small_norm_rate = [0]*7
+for i in range(7):
+    condat_norm_rate[i] = condat_res_norm[0]/condat_res_norm[i]
+    condat_unif_rate[i] = condat_res_uniform[0]/condat_res_uniform[i]
+    condat_small_norm_rate[i] = condat_res_small_norm[0]/condat_res_small_norm[i]
+plt.plot(cores[1:7], condat_norm_rate[1:11], 'o-', label = r'$N(0,1)$', color = "blue")
+plt.plot(cores[1:7], condat_unif_rate[1:11], '^-', label = r'$U[0,1]$', color = "green")
+plt.plot(cores[1:7], condat_small_norm_rate[1:11], 's-', label = r'$N(0,0.001)$', color = "red")
+plt.ylabel("Velocidad relativa")
+plt.xlabel("Número de cores")
+plt.xticks([8, 16, 24, 32, 40, 48])
+plt.legend()
+resolution_value = 300
+plt.savefig("simplex_condat.png", format="png", dpi=resolution_value)
+plt.show()
